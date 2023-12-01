@@ -15,7 +15,7 @@ const mappedNumbers = {
     "nine": 9
 }
 
-function getNumberPositions(line, includeLetters = false) {
+function getNumberPerLine(line, includeLetters = false) {
     const numbers = []
 
     if (includeLetters) {
@@ -50,7 +50,7 @@ function getNumberPositions(line, includeLetters = false) {
 }
 
 function getResult(isSecondPart = false) {
-    return input.map((line) => getNumberPositions(line, isSecondPart)).reduce((a, b) => a + b, 0)
+    return input.map((line) => getNumberPerLine(line, isSecondPart)).reduce((a, b) => a + b, 0)
 }
 
 export default returnResult(getResult(), getResult(true))
