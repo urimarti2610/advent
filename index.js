@@ -1,22 +1,14 @@
-let day = process.env.DAY;
+import fs from 'fs'
 
-if (day.length === 1) {
-    day = `0${day}`
-}
+const folders = fs.readdirSync('./', { recursive: true })
+    .filter(v => v.search('index.js') !== -1 && v !== 'index.js')
 
-const { default: result } = await import(`./${day}/index.js`)
-const title = `### Advent of Code 2023 - Day ${day} ###`
+const promises = folders.map(async (folder) => {
+    const day = folder.split('/')[0]
+    const { default: { result_1, result_2 } } = await import(`./${folder}`)
+    return { day, result_1, result_2 }
+})
 
-const hashLine = '#'.repeat(title.length)
-console.log(hashLine)
-console.log(title)
-console.log(hashLine)
+const results = await Promise.all(promises)
 
-const spaces = Math.floor((title.length - result.toString().length - 10) / 2)
-if (spaces * 2 + result.toString().length + 10 === title.length) {
-    console.log('###', ' '.repeat(spaces), result, ' '.repeat(spaces), '###')
-} else {
-    console.log('###', ' '.repeat(spaces), result, ' '.repeat(spaces + 1), '###')
-}
-
-console.log(hashLine)
+console.table(results.reduce((acc, { day, ...x }) => { acc[day] = x; return acc }, {}))

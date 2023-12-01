@@ -1,6 +1,6 @@
-import fs from 'fs'
+import { getInput, returnResult } from '../helper.js'
 
-const input = fs.readFileSync('./01/input.txt', 'utf8').split('\n')
+const input = getInput(1)
 
 const mappedNumbers = {
     "zero": 0,
@@ -15,21 +15,25 @@ const mappedNumbers = {
     "nine": 9
 }
 
-function getNumberPositions(line, numbers = []) {
-    // Get all numbers by letters from line
-    Object.entries(mappedNumbers).forEach(([numName, number]) => {
-        let newLine = line
-        let position = 0
-        let deleted = 0
-        do {
-            position = newLine.search(numName)
-            if (position > -1) {
-                numbers.push({ position: position + deleted, number })
-                deleted += numName.length
-                newLine = newLine.replace(numName, '')
-            }
-        } while (position > -1)
-    })
+function getNumberPositions(line, includeLetters = false) {
+    const numbers = []
+
+    if (includeLetters) {
+        // Get all numbers by letters from line
+        Object.entries(mappedNumbers).forEach(([numName, number]) => {
+            let newLine = line
+            let position = 0
+            let deleted = 0
+            do {
+                position = newLine.search(numName)
+                if (position > -1) {
+                    numbers.push({ position: position + deleted, number })
+                    deleted += numName.length
+                    newLine = newLine.replace(numName, '')
+                }
+            } while (position > -1)
+        })
+    }
 
     // Get all numbers by digits from line
     line.split('').forEach((char, position) => {
@@ -45,6 +49,8 @@ function getNumberPositions(line, numbers = []) {
     return Number([firstNumber.number, lastNumber.number].join(''))
 }
 
-const result = input.map((line) => getNumberPositions(line)).reduce((a, b) => a + b, 0)
+function getResult(isSecondPart = false) {
+    return input.map((line) => getNumberPositions(line, isSecondPart)).reduce((a, b) => a + b, 0)
+}
 
-export default result
+export default returnResult(getResult(), getResult(true))
