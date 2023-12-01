@@ -1,5 +1,7 @@
 import fs from 'fs'
 
+const input = fs.readFileSync('./01/input.txt', 'utf8').split('\n')
+
 const mappedNumbers = {
     "zero": 0,
     "one": 1,
@@ -13,9 +15,8 @@ const mappedNumbers = {
     "nine": 9
 }
 
-const input = fs.readFileSync('./01/input.txt', 'utf8').split('\n')
-
 function getNumberPositions(line, numbers = []) {
+    // Get all numbers by letters from line
     Object.entries(mappedNumbers).forEach(([numName, number]) => {
         let newLine = line
         let position = 0
@@ -30,6 +31,7 @@ function getNumberPositions(line, numbers = []) {
         } while (position > -1)
     })
 
+    // Get all numbers by digits from line
     line.split('').forEach((char, position) => {
         const number = Number(char)
         if (!isNaN(number)) {
