@@ -8,57 +8,59 @@ const maxCubes = {
     blue: 14,
 }
 
-function getResult(isSecondPart = false) {
-    let result = 0
-    for (const gameLine of input) {
-        const [gameId, gameData] = gameLine.split(':')
-        const id = Number(gameId.replace('Game ', ''))
+function getIdIfPossible(gameCubes, id) {
+    if (gameCubes.every(cube =>
+        cube.red <= maxCubes.red &&
+        cube.green <= maxCubes.green &&
+        cube.blue <= maxCubes.blue)
+    ) {
+        return id
+    }
+    return 0
+}
 
-        const gameSets = gameData.split(';')
-        const gameCubes = gameSets.map(set => {
-            const splitSet = set.trim().split(',')
-            const cube = { red: 0, green: 0, blue: 0 }
-            for (const cubeData of splitSet) {
-                const [count, color] = cubeData.trim().split(' ')
-                cube[color] += Number(count)
+function getFewestCubes(gameCubes) {
+    const colors = ['red', 'green', 'blue']
+    const fewestCubesColors = gameCubes.reduce((acc, cube) => {
+        colors.forEach(color => {
+            if (cube[color] > acc[color]) {
+                acc[color] = cube[color]
             }
-
-            return cube
         })
 
-        if (!isSecondPart) {
-            // Solution game 1
-            if (gameCubes.every(cube =>
-                cube.red <= maxCubes.red &&
-                cube.green <= maxCubes.green &&
-                cube.blue <= maxCubes.blue)
-            ) {
-                result += id
-            }
+        return acc
+    }, { red: 0, green: 0, blue: 0 })
+    return fewestCubesColors.red * fewestCubesColors.green * fewestCubesColors.blue
+}
 
-        } else {
+function getLineGameCubes(gameLine) {
+    const [gameId, gameData] = gameLine.split(':')
+    const id = Number(gameId.replace('Game ', ''))
 
-            // Solution game 2
-            const fewestCubesColors = gameCubes.reduce((acc, cube) => {
-                if (cube.red > acc.red) {
-                    acc.red = cube.red
-                }
-
-                if (cube.green > acc.green) {
-                    acc.green = cube.green
-                }
-
-                if (cube.blue > acc.blue) {
-                    acc.blue = cube.blue
-                }
-
-                return acc
-            }, { red: 0, green: 0, blue: 0 })
-            const fewestCubes = fewestCubesColors.red * fewestCubesColors.green * fewestCubesColors.blue
-            result += fewestCubes
-
-            // console.log({ gameId, id, gameCubes, fewestCubesColors, fewestCubes })
+    const gameSets = gameData.split(';')
+    const gameCubes = gameSets.map(set => {
+        const splitSet = set.trim().split(',')
+        const cube = { red: 0, green: 0, blue: 0 }
+        for (const cubeData of splitSet) {
+            const [count, color] = cubeData.trim().split(' ')
+            cube[color] += Number(count)
         }
+
+        return cube
+    })
+
+    return { gameCubes, id }
+}
+
+function getResult(isSecondPart = false) {
+    let result = 0
+
+    for (const gameLine of input) {
+        const { gameCubes, id } = getLineGameCubes(gameLine)
+
+        result += isSecondPart ?
+            getFewestCubes(gameCubes) :
+            getIdIfPossible(gameCubes, id)
     }
 
     return result
