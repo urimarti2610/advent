@@ -53,6 +53,7 @@ function getNumberAdjecent() {
     return result
 }
 
+// Part 2
 function getGearPart() {
     let result = 0
 
