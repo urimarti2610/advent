@@ -88,10 +88,7 @@ function getGearPart(line, index) {
         currentMatxes = currentMatxes.flat().filter(v => v > 0)
         if (currentMatxes.length === 2) {
             result = currentMatxes.reduce((a, b) => a * b, 1)
-        } else {
-            console.log({ searchIndex, index, currentMatxes })
         }
-
 
         adjecentNumbers.push(result)
     })
