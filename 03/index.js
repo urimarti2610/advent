@@ -7,38 +7,38 @@ function getNumberAdjecent(line, index) {
     const numbers = RegExp(/(\d+)/g)
     const matches = line.match(numbers)
 
-    if (matches) {
-        return matches.map((match) => {
-            const searchIndex = line.search(match)
-            const number = parseInt(match)
-            const numberLength = match.length
+    if (!matches) return 0
 
-            line = line.replace(match, '.'.repeat(numberLength))
+    return matches.map((match) => {
+        const searchIndex = line.search(match)
+        const number = parseInt(match)
+        const numberLength = match.length
 
-            const before = input[index - 1]
+        line = line.replace(match, '.'.repeat(numberLength))
 
-            if (before && checkAdjecent(before, searchIndex, numberLength)) {
-                return number;
-            }
+        const before = input[index - 1]
 
-            const next = input[index + 1]
-            if (next && checkAdjecent(next, searchIndex, numberLength)) {
-                return number;
-            }
+        if (before && checkAdjecent(before, searchIndex, numberLength)) {
+            return number;
+        }
 
-            const charBefore = line[searchIndex - 1]
-            if (charBefore && isSpecialCharacter(charBefore)) {
-                return number;
-            }
+        const next = input[index + 1]
+        if (next && checkAdjecent(next, searchIndex, numberLength)) {
+            return number;
+        }
 
-            const charAfter = line[searchIndex + numberLength]
-            if (charAfter && isSpecialCharacter(charAfter)) {
-                return number;
-            }
+        const charBefore = line[searchIndex - 1]
+        if (charBefore && isSpecialCharacter(charBefore)) {
+            return number;
+        }
 
-            return 0;
-        }).flat().reduce((a, b) => a + b, 0)
-    }
+        const charAfter = line[searchIndex + numberLength]
+        if (charAfter && isSpecialCharacter(charAfter)) {
+            return number;
+        }
+
+        return 0;
+    }).flat().reduce((a, b) => a + b, 0)
 }
 
 function checkAdjecent(line, position, length) {
