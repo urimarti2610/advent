@@ -5,8 +5,8 @@ const folders = fs.readdirSync('./', { recursive: true })
 
 const promises = folders.map(async (folder) => {
     const day = folder.split('/')[0]
-    const { default: { result_1, result_2 } } = await import(`./${folder}`)
-    return { day, result_1, result_2 }
+    const { default: { result_1, result_2, duration } } = await import(`./${folder}`)
+    return { day, result_1, result_2, duration }
 })
 
 const results = await Promise.all(promises)

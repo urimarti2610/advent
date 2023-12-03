@@ -1,39 +1,35 @@
 import { getInput, returnResult } from '../helper.js'
+import { Timer } from '../timer.js'
 
 const input = getInput(3)
 
 const grid = { numbers: [], symbols: [], gears: [] }
 
-function fillGrid() {
-    input.forEach((line, index) => {
-        const numbers = RegExp(/(\d+)/g)
-        const symbols = RegExp(/[@*$&\/=\-+#%]/g)
-        const gears = RegExp(/(\*)/g)
+const numbers = RegExp(/(\d+)/g)
+const symbols = RegExp(/[@*$&\/=\-+#%]/g)
+const gears = RegExp(/(\*)/g)
+const regexes = [
+    { regex: numbers, type: 'numbers' },
+    { regex: symbols, type: 'symbols' },
+    { regex: gears, type: 'gears' },
+]
 
-        const regexes = [
-            { regex: numbers, type: 'numbers' },
-            { regex: symbols, type: 'symbols' },
-            { regex: gears, type: 'gears' },
-        ]
-
-        let match
-        regexes.forEach(({ regex, type }) => {
-            while ((match = regex.exec(line)) !== null) {
-                const value = match[0]
-                const data = {
-                    value,
-                    start: match.index,
-                    end: regex.lastIndex,
-                    line: index,
-                }
-                grid[type].push(data)
+let match
+input.forEach((line, index) => {
+    regexes.forEach(({ regex, type }) => {
+        while ((match = regex.exec(line)) !== null) {
+            const value = match[0]
+            const data = {
+                value,
+                start: match.index,
+                end: regex.lastIndex,
+                line: index,
             }
-        })
-
+            grid[type].push(data)
+        }
     })
-}
+})
 
-fillGrid()
 
 // Part 1
 function getNumberAdjecent() {
@@ -88,4 +84,4 @@ function getResult(isSecondPart = false) {
     return isSecondPart ? getGearPart() : getNumberAdjecent()
 }
 
-export default returnResult(getResult(), getResult(true))
+export default returnResult(getResult(), getResult(true), new Timer())

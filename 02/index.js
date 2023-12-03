@@ -1,4 +1,5 @@
 import { getInput, returnResult } from '../helper.js'
+import { Timer } from '../timer.js'
 
 const input = getInput(2)
 
@@ -66,4 +67,4 @@ function getResult(isSecondPart = false) {
     return result
 }
 
-export default returnResult(getResult(), getResult(true))
+export default returnResult(getResult(), getResult(true), new Timer())

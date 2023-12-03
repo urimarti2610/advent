@@ -1,7 +1,9 @@
 import fs from 'fs'
+import { Timer } from './timer.js'
 
-export function returnResult(result_1, result_2) {
-    return { result_1, result_2 }
+export function returnResult(result_1, result_2, timer) {
+    const duration = timer.getDuration()
+    return { result_1, result_2, duration }
 }
 
 export function getInput(day, splitBy = '\n') {

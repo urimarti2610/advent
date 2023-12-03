@@ -1,4 +1,5 @@
 import { getInput, returnResult } from '../helper.js'
+import { Timer } from '../timer.js'
 
 const input = getInput(1)
 
@@ -53,4 +54,4 @@ function getResult(isSecondPart = false) {
     return input.map((line) => getNumberPerLine(line, isSecondPart)).reduce((a, b) => a + b, 0)
 }
 
-export default returnResult(getResult(), getResult(true))
+export default returnResult(getResult(), getResult(true), new Timer())
