@@ -38,6 +38,7 @@ fillGrid()
 // Part 1
 function getNumberAdjecent() {
     let result = 0
+
     grid.numbers.forEach(({ value, start, end, line }) => {
         const symbolsAdjecents = grid.symbols.filter(symbol => {
             // Symbols should be in the same line, next line or previous line
