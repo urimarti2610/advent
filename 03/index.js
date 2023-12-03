@@ -2,181 +2,88 @@ import { getInput, returnResult } from '../helper.js'
 
 const input = getInput(3)
 
-// Part 1
-function getNumberAdjecent(line, index) {
-    const numbers = RegExp(/(\d+)/g)
-    const matches = line.match(numbers)
+const grid = { numbers: [], symbols: [], gears: [] }
 
-    if (!matches) return 0
-
-    return matches.map((match) => {
-        const searchIndex = line.search(match)
-        const number = parseInt(match)
-        const numberLength = match.length
-
-        line = line.replace(match, '.'.repeat(numberLength))
-
-        const before = input[index - 1]
-
-        if (before && checkAdjecent(before, searchIndex, numberLength)) {
-            return number;
-        }
-
-        const next = input[index + 1]
-        if (next && checkAdjecent(next, searchIndex, numberLength)) {
-            return number;
-        }
-
-        const charBefore = line[searchIndex - 1]
-        if (charBefore && isSpecialCharacter(charBefore)) {
-            return number;
-        }
-
-        const charAfter = line[searchIndex + numberLength]
-        if (charAfter && isSpecialCharacter(charAfter)) {
-            return number;
-        }
-
-        return 0;
-    }).flat().reduce((a, b) => a + b, 0)
-}
-
-function checkAdjecent(line, position, length) {
-    if (position > 0) {
-        position--
-    }
-
-    if (position + length < line.length) {
-        length += 2
-    }
-
-    const characters = line.split('').slice(position, position + length)
-
-    return characters.some((character) => isSpecialCharacter(character))
-}
-
-function isSpecialCharacter(character) {
-    return character !== '.' && isNaN(Number(character))
-}
-
-// Part 2
-function getGearPart(line, index) {
-    const asteriscs = RegExp(/(\*)/g)
-    const matches = line.match(asteriscs)
-
-    const adjecentNumbers = []
-
-    matches?.forEach((match) => {
-        let currentMatxes = []
-        let result = 0
-
-        const searchIndex = line.indexOf(match)
-        line = line.replace(match, '.')
-
-        currentMatxes.push(getNumberAdjecentToAsterisk(line, searchIndex))
-
-        const before = input[index - 1]
-        if (before) {
-            currentMatxes.push(getNumberAdjecentToAsterisk(before, searchIndex))
-        }
-
-        const next = input[index + 1]
-        if (next) {
-            currentMatxes.push(getNumberAdjecentToAsterisk(next, searchIndex))
-        }
-
-        currentMatxes = currentMatxes.flat().filter(v => v > 0)
-        if (currentMatxes.length === 2) {
-            result = currentMatxes.reduce((a, b) => a * b, 1)
-        }
-
-        adjecentNumbers.push(result)
-    })
-
-    return adjecentNumbers.reduce((a, b) => a + b, 0)
-}
-
-function getNumberAdjecentToAsterisk(line, position) {
-    if (position > 0) {
-        position--
-    }
-
-    const characters = line.split('').slice(position, position + 3)
-
-    const numberIndexes = characters.map((character, index) => {
-        const number = Number(character)
-        if (isNaN(number)) return null
-
-        const numPosition = position + index
-        return { numPosition, number }
-    }).filter((index) => index !== null)
-
-    if (numberIndexes.length === 0) return 0
-
-    // Get chars on the left
-    let gotFirstChar = false
-    do {
-        const currentPosition = Math.min(...numberIndexes.map(({ numPosition }) => numPosition)) - 1
-        const currentChar = Number(line.charAt(currentPosition))
-        if (!isNaN(currentChar)) {
-            numberIndexes.push({ numPosition: currentPosition, number: currentChar })
-        } else {
-            gotFirstChar = true
-        }
-
-        if (currentPosition === 0) {
-            gotFirstChar = true
-        }
-    } while (gotFirstChar === false)
-
-    // Get chars on the right
-    let gotLastChar = false
-    do {
-        const currentPosition = Math.max(...numberIndexes.map(({ numPosition }) => numPosition)) + 1
-        const currentChar = Number(line.charAt(currentPosition))
-        if (!isNaN(currentChar)) {
-            numberIndexes.push({ numPosition: currentPosition, number: currentChar })
-        } else {
-            gotLastChar = true
-        }
-
-        if (currentPosition === line.length - 1) {
-            gotLastChar = true
-        }
-    } while (gotLastChar === false)
-
-    numberIndexes.sort((a, b) => a.numPosition - b.numPosition)
-
-    // Separate numbers
-    const numbers = []
-    let currentNumberIndex = 0
-    let lastPosition
-    for (let i = 0; i < numberIndexes.length; i++) {
-        const { number, numPosition } = numberIndexes[i]
-
-        if (lastPosition && numPosition - lastPosition > 1) {
-            currentNumberIndex++
-        }
-
-        lastPosition = numPosition
-
-        numbers[currentNumberIndex] ||= ''
-        numbers[currentNumberIndex] += number
-    }
-
-    return numbers.map(number => Number(number))
-}
-
-function getResult(isSecondPart = false) {
-    let result = 0
-
+function fillGrid() {
     input.forEach((line, index) => {
-        result += isSecondPart ?
-            getGearPart(line, index) :
-            getNumberAdjecent(line, index)
+        const numbers = RegExp(/(\d+)/g)
+        const symbols = RegExp(/[@*$&\/=\-+#%]/g)
+        const gears = RegExp(/(\*)/g)
+
+        const regexes = [
+            { regex: numbers, type: 'numbers' },
+            { regex: symbols, type: 'symbols' },
+            { regex: gears, type: 'gears' },
+        ]
+
+        let match
+        regexes.forEach(({ regex, type }) => {
+            while ((match = regex.exec(line)) !== null) {
+                const value = match[0]
+                const data = {
+                    value,
+                    start: match.index,
+                    end: regex.lastIndex,
+                    line: index,
+                }
+                grid[type].push(data)
+            }
+        })
+
+    })
+}
+
+fillGrid()
+
+// Part 1
+function getNumberAdjecent() {
+    let result = 0
+    grid.numbers.forEach(({ value, start, end, line }) => {
+        const symbolsAdjecents = grid.symbols.filter(symbol => {
+            // Symbols should be in the same line, next line or previous line
+            return [line - 1, line, line + 1].includes(symbol.line) &&
+                // Symbol position should be on the left, up or right of the number
+                symbol.start >= (start - 1) &&
+                symbol.end <= (end + 1)
+        })
+
+        if (symbolsAdjecents.length > 0) result += parseInt(value)
     })
 
     return result
+}
+
+function getGearPart() {
+    let result = 0
+
+    grid.gears.forEach(({ start, line }) => {
+        const numbers = grid.numbers.filter(number => {
+            // Get all the positions of the number
+            const numberPositions = Array(number.value.length) // New array with the length of the number
+                .fill(number.start) // Fill the array with the start position of the number
+                .map((v, i) => v + i) // Increase the position of the number with the index
+
+            // Number should be in the same line, next line or previous line
+            return [line - 1, line, line + 1].includes(number.line) &&
+                // number should be on the left, up or right of the gear
+                (
+                    numberPositions.includes(start - 1) ||  // left
+                    numberPositions.includes(start) ||      // up
+                    numberPositions.includes(start + 1)     // right
+                )
+        })
+
+        if (numbers.length === 2) {
+            const numberValues = numbers.map(({ value }) => parseInt(value))
+            result += numberValues.reduce((a, b) => a * b, 1)
+        }
+    })
+
+    return result
+}
+
+function getResult(isSecondPart = false) {
+    return isSecondPart ? getGearPart() : getNumberAdjecent()
 }
 
 export default returnResult(getResult(), getResult(true))
