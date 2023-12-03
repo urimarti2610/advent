@@ -1,5 +1,4 @@
 import fs from 'fs'
-import { Timer } from './timer.js'
 
 export function returnResult(result_1, result_2, timer) {
     const duration = timer.getDuration()

@@ -1,13 +1,13 @@
 {
-  "name": "advent",
+  "name": "advent-of-code",
   "version": "1.0.0",
   "type": "module",
-  "description": "",
-  "main": "01.js",
+  "description": "Advent of code 2023 results",
+  "main": "index.js",
   "scripts": {
     "start": "node index"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["advent-of-code", "advent", "code"],
+  "author": "urimarti",
   "license": "ISC"
 }
