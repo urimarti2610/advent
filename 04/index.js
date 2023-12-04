@@ -3,8 +3,6 @@ import { Timer } from '../timer.js'
 
 const input = getInput(4)
 
-const ids = {}
-
 const numbersGrid = input.map((row, i) => {
     const [inputPart1, inputPart2] = row.split('|')
     const numbersPart = inputPart1.split(':')
@@ -24,9 +22,9 @@ function part1() {
     let result = 0
 
     numbersGrid.forEach(({ winningNumbers, playingNumbers }) => {
-        const length = getTotalWins(winningNumbers, playingNumbers)
-        let currentResult = length > 0 ? 1 : 0
-        for (let i = 2; i <= length; i++) {
+        const totalWins = getTotalWins(winningNumbers, playingNumbers)
+        let currentResult = totalWins > 0 ? 1 : 0
+        for (let i = 2; i <= totalWins; i++) {
             currentResult *= 2
         }
 
@@ -53,12 +51,9 @@ function part2(appenededGames, result) {
 
     const newAppenededGames = []
     appenededGames.forEach(({ gameId, winningNumbers, playingNumbers }) => {
-        const length = getTotalWins(winningNumbers, playingNumbers)
-        for (let i = 1; i <= length; i++) {
-            const newGameId = gameId + i
-            ids[newGameId] ||= 0
-            ids[newGameId]++
-            const appendedGame = numbersGrid.find(v => v.gameId === newGameId)
+        const totalWins = getTotalWins(winningNumbers, playingNumbers)
+        for (let i = 1; i <= totalWins; i++) {
+            const appendedGame = numbersGrid.find(v => v.gameId === gameId + i)
             if (appendedGame) {
                 newAppenededGames.push(appendedGame)
             }
