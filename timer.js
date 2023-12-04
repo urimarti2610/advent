@@ -1,10 +1,12 @@
 export class Timer {
     constructor() {
-        this.start = process.hrtime()
+        this.start = new Date().getTime()
     }
 
     getDuration() {
-        const diff = process.hrtime(this.start)
-        return Number(`${diff[0] * 1e3 + diff[1] * 1e-6}`.slice(0, 6))
+        const now = new Date().getTime()
+
+        const difference = (now - this.start) / 1000;
+        return difference
     }
 }

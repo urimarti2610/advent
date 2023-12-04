@@ -1,5 +1,6 @@
 import { getInput, returnResult } from '../helper.js'
 import { Timer } from '../timer.js'
+const timer = new Timer()
 
 const input = getInput(3)
 
@@ -84,4 +85,4 @@ function getResult(isSecondPart = false) {
     return isSecondPart ? getGearPart() : getNumberAdjecent()
 }
 
-export default returnResult(getResult(), getResult(true), new Timer())
+export default returnResult(getResult(), getResult(true), timer)

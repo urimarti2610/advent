@@ -1,6 +1,7 @@
 import { getInput, returnResult } from '../helper.js'
 import { Timer } from '../timer.js'
 
+const timer = new Timer()
 const input = getInput(2)
 
 const maxCubes = {
@@ -67,4 +68,4 @@ function getResult(isSecondPart = false) {
     return result
 }
 
-export default returnResult(getResult(), getResult(true), new Timer())
+export default returnResult(getResult(), getResult(true), timer)
