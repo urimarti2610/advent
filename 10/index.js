@@ -4,85 +4,87 @@ const timer = new Timer()
 
 const input = getInput(10)
 
-const G = input.map((row) => row.split(''));
+const grid = input.map((row) => row.split(''));
 
-const R = G.length;
-const C = G[0].length;
+const rows = grid.length;
+const columns = grid[0].length;
 
-let sr, sc, sd;
-for (let r = 0; r < R; r++) {
-    for (let c = 0; c < C; c++) {
-        if (G[r][c] === 'S') {
-            sr = r;
-            sc = c;
-            const up_valid = ['|', '7', 'F'].includes(G[r - 1][c]);
-            const right_valid = ['-', '7', 'J'].includes(G[r][c + 1]);
-            const down_valid = ['|', 'L', 'J'].includes(G[r + 1][c]);
-            const left_valid = ['-', 'L', 'F'].includes(G[r][c - 1]);
-            const validCount = [up_valid, right_valid, down_valid, left_valid].filter(Boolean).length;
-            if (validCount === 2) {
-                if (up_valid && down_valid) {
-                    G[r][c] = '|';
-                    sd = 0;
-                } else if (up_valid && right_valid) {
-                    G[r][c] = 'L';
-                    sd = 0;
-                } else if (up_valid && left_valid) {
-                    G[r][c] = 'J';
-                    sd = 0;
-                } else if (down_valid && right_valid) {
-                    G[r][c] = 'F';
-                    sd = 2;
-                } else if (down_valid && left_valid) {
-                    G[r][c] = '7';
-                    sd = 2;
-                } else if (left_valid && right_valid) {
-                    G[r][c] = '-';
-                    sd = 1;
-                } else {
-                    throw new Error('Invalid configuration');
-                }
+let startRow, startColumn, startDirection;
+for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < columns; c++) {
+        if (grid[r][c] === 'S') {
+            startRow = r;
+            startColumn = c;
+            const isUpValid = ['|', '7', 'F'].includes(grid[r - 1][c]);
+            const isRightValid = ['-', '7', 'J'].includes(grid[r][c + 1]);
+            const isDownValid = ['|', 'L', 'J'].includes(grid[r + 1][c]);
+            const left_valid = ['-', 'L', 'F'].includes(grid[r][c - 1]);
+            const validCount = [isUpValid, isRightValid, isDownValid, left_valid].filter(Boolean).length;
+
+            if (validCount !== 2) {
+                throw new Error('Invalid configuration');
+            }
+
+            if (isUpValid && isDownValid) {
+                grid[r][c] = '|';
+                startDirection = 0;
+            } else if (isUpValid && isRightValid) {
+                grid[r][c] = 'L';
+                startDirection = 0;
+            } else if (isUpValid && left_valid) {
+                grid[r][c] = 'J';
+                startDirection = 0;
+            } else if (isDownValid && isRightValid) {
+                grid[r][c] = 'F';
+                startDirection = 2;
+            } else if (isDownValid && left_valid) {
+                grid[r][c] = '7';
+                startDirection = 2;
+            } else if (left_valid && isRightValid) {
+                grid[r][c] = '-';
+                startDirection = 1;
             } else {
                 throw new Error('Invalid configuration');
             }
+
         }
     }
 }
 
-const DR = [-1, 0, 1, 0];
-const DC = [0, 1, 0, -1];
+const rowMovements = [-1, 0, 1, 0];
+const columnMovements = [0, 1, 0, -1];
 
-const R2 = 3 * R;
-const C2 = 3 * C;
-const G2 = Array.from({ length: R2 }, () => Array.from({ length: C2 }, () => '.'));
+const rows2 = 3 * rows;
+const columns2 = 3 * columns;
+const grid2 = Array.from({ length: rows2 }, () => Array.from({ length: columns2 }, () => '.'));
 
-for (let r = 0; r < R; r++) {
-    for (let c = 0; c < C; c++) {
-        const pipe = G[r][c];
+for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < columns; c++) {
+        const pipe = grid[r][c];
         if (pipe === '|') {
-            G2[3 * r][3 * c + 1] = 'x';
-            G2[3 * r + 1][3 * c + 1] = 'x';
-            G2[3 * r + 2][3 * c + 1] = 'x';
+            grid2[3 * r][3 * c + 1] = 'x';
+            grid2[3 * r + 1][3 * c + 1] = 'x';
+            grid2[3 * r + 2][3 * c + 1] = 'x';
         } else if (pipe === '-') {
-            G2[3 * r + 1][3 * c] = 'x';
-            G2[3 * r + 1][3 * c + 1] = 'x';
-            G2[3 * r + 1][3 * c + 2] = 'x';
+            grid2[3 * r + 1][3 * c] = 'x';
+            grid2[3 * r + 1][3 * c + 1] = 'x';
+            grid2[3 * r + 1][3 * c + 2] = 'x';
         } else if (pipe === '7') {
-            G2[3 * r + 1][3 * c] = 'x';
-            G2[3 * r + 1][3 * c + 1] = 'x';
-            G2[3 * r + 2][3 * c + 1] = 'x';
+            grid2[3 * r + 1][3 * c] = 'x';
+            grid2[3 * r + 1][3 * c + 1] = 'x';
+            grid2[3 * r + 2][3 * c + 1] = 'x';
         } else if (pipe === 'F') {
-            G2[3 * r + 2][3 * c + 1] = 'x';
-            G2[3 * r + 1][3 * c + 1] = 'x';
-            G2[3 * r + 1][3 * c + 2] = 'x';
+            grid2[3 * r + 2][3 * c + 1] = 'x';
+            grid2[3 * r + 1][3 * c + 1] = 'x';
+            grid2[3 * r + 1][3 * c + 2] = 'x';
         } else if (pipe === 'J') {
-            G2[3 * r + 1][3 * c] = 'x';
-            G2[3 * r + 1][3 * c + 1] = 'x';
-            G2[3 * r][3 * c + 1] = 'x';
+            grid2[3 * r + 1][3 * c] = 'x';
+            grid2[3 * r + 1][3 * c + 1] = 'x';
+            grid2[3 * r][3 * c + 1] = 'x';
         } else if (pipe === 'L') {
-            G2[3 * r][3 * c + 1] = 'x';
-            G2[3 * r + 1][3 * c + 1] = 'x';
-            G2[3 * r + 1][3 * c + 2] = 'x';
+            grid2[3 * r][3 * c + 1] = 'x';
+            grid2[3 * r + 1][3 * c + 1] = 'x';
+            grid2[3 * r + 1][3 * c + 2] = 'x';
         } else if (pipe === '.') {
             // do nothing
         } else {
@@ -91,102 +93,109 @@ for (let r = 0; r < R; r++) {
     }
 }
 
-const Q = [];
-const SEEN = new Set();
+const queue = [];
+const visitedCoordinates = new Set();
 
-for (let r = 0; r < R2; r++) {
-    Q.push([r, 0]);
-    Q.push([r, C2 - 1]);
+for (let r = 0; r < rows2; r++) {
+    queue.push([r, 0]);
+    queue.push([r, columns2 - 1]);
 }
-for (let c = 0; c < C2; c++) {
-    Q.push([0, c]);
-    Q.push([R2 - 1, c]);
+for (let c = 0; c < columns2; c++) {
+    queue.push([0, c]);
+    queue.push([rows2 - 1, c]);
 }
 
 
-while (Q.length > 0) {
-    const [r, c] = Q.shift();
+while (queue.length > 0) {
+    const [r, c] = queue.shift();
     const pos = `${r},${c}`;
-    if (SEEN.has(pos)) {
+    if (visitedCoordinates.has(pos)) {
         continue;
     }
-    if (!(r >= 0 && r < R2 && c >= 0 && c < C2)) {
+    if (!(r >= 0 && r < rows2 && c >= 0 && c < columns2)) {
         continue;
     }
-    SEEN.add(pos);
-    if (G2[r][c] === 'x') {
+    visitedCoordinates.add(pos);
+    if (grid2[r][c] === 'x') {
         continue;
     }
     for (let d = 0; d < 4; d++) {
-        Q.push([r + DR[d], c + DC[d]]);
+        queue.push([r + rowMovements[d], c + columnMovements[d]]);
     }
 }
 
 
 
 function part1() {
-    let r = sr;
-    let c = sc;
-    let dist = 0;
+    let row = startRow;
+    let column = startColumn;
+    let distance = 0;
     while (true) {
-        dist++;
-        r += DR[sd];
-        c += DC[sd];
-        if (G[r][c] === 'L') {
-            if (![2, 3].includes(sd)) {
+        distance++;
+        row += rowMovements[startDirection];
+        column += columnMovements[startDirection];
+
+        const current = grid[row][column]
+
+        if (current === 'L') {
+            if (![2, 3].includes(startDirection)) {
                 break;
-            } else if (sd === 2) {
-                sd = 1;
+            } else if (startDirection === 2) {
+                startDirection = 1;
             } else {
-                sd = 0;
+                startDirection = 0;
             }
         }
-        if (G[r][c] === 'J') {
-            if (![1, 2].includes(sd)) {
+
+        if (current === 'J') {
+            if (![1, 2].includes(startDirection)) {
                 break;
-            } else if (sd === 1) {
-                sd = 0;
+            } else if (startDirection === 1) {
+                startDirection = 0;
             } else {
-                sd = 3;
+                startDirection = 3;
             }
         }
-        if (G[r][c] === '7') {
-            if (![0, 1].includes(sd)) {
+
+        if (current === '7') {
+            if (![0, 1].includes(startDirection)) {
                 break;
-            } else if (sd === 0) {
-                sd = 3;
+            } else if (startDirection === 0) {
+                startDirection = 3;
             } else {
-                sd = 2;
+                startDirection = 2;
             }
         }
-        if (G[r][c] === 'F') {
-            if (![0, 3].includes(sd)) {
+
+        if (current === 'F') {
+            if (![0, 3].includes(startDirection)) {
                 break;
-            } else if (sd === 0) {
-                sd = 1;
+            } else if (startDirection === 0) {
+                startDirection = 1;
             } else {
-                sd = 2;
+                startDirection = 2;
             }
         }
-        if (G[r][c] === '.') {
+
+        if (current === '.') {
             throw new Error('Invalid path');
         }
 
-        if (r === sr && c === sc) {
-            return Math.floor(dist / 2);
+        if (row === startRow && column === startColumn) {
+            return Math.floor(distance / 2);
         }
     }
 }
 
 function part2() {
     let result = 0;
-    for (let r = 0; r < R; r++) {
-        for (let c = 0; c < C; c++) {
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < columns; c++) {
             let seen = false;
             for (let rr = 0; rr < 3; rr++) {
                 for (let cc = 0; cc < 3; cc++) {
                     const coord = [3 * r + rr, 3 * c + cc].join(',');
-                    if (SEEN.has(coord)) {
+                    if (visitedCoordinates.has(coord)) {
                         seen = true;
                     }
                 }
