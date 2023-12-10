@@ -50,7 +50,6 @@ function solve(part2 = false) {
             if (p.endsWith('Z')) {
                 T[i] = t + 1;
                 if (Object.keys(T).length === POS.length) {
-                    console.log(Object.values(T));
                     return lcm(Object.values(T));
                 }
             }
