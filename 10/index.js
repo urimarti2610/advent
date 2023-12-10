@@ -57,34 +57,40 @@ const columnMovements = [0, 1, 0, -1];
 const rows2 = 3 * rows;
 const columns2 = 3 * columns;
 const grid2 = Array.from({ length: rows2 }, () => Array.from({ length: columns2 }, () => '.'));
+const X_SYMBOL = 'x'
 
 for (let r = 0; r < rows; r++) {
     for (let c = 0; c < columns; c++) {
         const pipe = grid[r][c];
+
+        const col = 3 * c
+        const row = 3 * r
+
+
         if (pipe === '|') {
-            grid2[3 * r][3 * c + 1] = 'x';
-            grid2[3 * r + 1][3 * c + 1] = 'x';
-            grid2[3 * r + 2][3 * c + 1] = 'x';
+            grid2[row][col + 1] = X_SYMBOL;
+            grid2[row + 1][col + 1] = X_SYMBOL;
+            grid2[row + 2][col + 1] = X_SYMBOL;
         } else if (pipe === '-') {
-            grid2[3 * r + 1][3 * c] = 'x';
-            grid2[3 * r + 1][3 * c + 1] = 'x';
-            grid2[3 * r + 1][3 * c + 2] = 'x';
+            grid2[row + 1][col] = X_SYMBOL;
+            grid2[row + 1][col + 1] = X_SYMBOL;
+            grid2[row + 1][col + 2] = X_SYMBOL;
         } else if (pipe === '7') {
-            grid2[3 * r + 1][3 * c] = 'x';
-            grid2[3 * r + 1][3 * c + 1] = 'x';
-            grid2[3 * r + 2][3 * c + 1] = 'x';
+            grid2[row + 1][col] = X_SYMBOL;
+            grid2[row + 1][col + 1] = X_SYMBOL;
+            grid2[row + 2][col + 1] = X_SYMBOL;
         } else if (pipe === 'F') {
-            grid2[3 * r + 2][3 * c + 1] = 'x';
-            grid2[3 * r + 1][3 * c + 1] = 'x';
-            grid2[3 * r + 1][3 * c + 2] = 'x';
+            grid2[row + 2][col + 1] = X_SYMBOL;
+            grid2[row + 1][col + 1] = X_SYMBOL;
+            grid2[row + 1][col + 2] = X_SYMBOL;
         } else if (pipe === 'J') {
-            grid2[3 * r + 1][3 * c] = 'x';
-            grid2[3 * r + 1][3 * c + 1] = 'x';
-            grid2[3 * r][3 * c + 1] = 'x';
+            grid2[row + 1][col] = X_SYMBOL;
+            grid2[row + 1][col + 1] = X_SYMBOL;
+            grid2[row][col + 1] = X_SYMBOL;
         } else if (pipe === 'L') {
-            grid2[3 * r][3 * c + 1] = 'x';
-            grid2[3 * r + 1][3 * c + 1] = 'x';
-            grid2[3 * r + 1][3 * c + 2] = 'x';
+            grid2[row][col + 1] = X_SYMBOL;
+            grid2[row + 1][col + 1] = X_SYMBOL;
+            grid2[row + 1][col + 2] = X_SYMBOL;
         } else if (pipe === '.') {
             // do nothing
         } else {
@@ -109,16 +115,21 @@ for (let c = 0; c < columns2; c++) {
 while (queue.length > 0) {
     const [r, c] = queue.shift();
     const pos = `${r},${c}`;
+
     if (visitedCoordinates.has(pos)) {
         continue;
     }
+
     if (!(r >= 0 && r < rows2 && c >= 0 && c < columns2)) {
         continue;
     }
+
     visitedCoordinates.add(pos);
-    if (grid2[r][c] === 'x') {
+
+    if (grid2[r][c] === X_SYMBOL) {
         continue;
     }
+
     for (let d = 0; d < 4; d++) {
         queue.push([r + rowMovements[d], c + columnMovements[d]]);
     }
