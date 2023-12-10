@@ -13,5 +13,5 @@ const promises = folders.map(async (folder) => {
 
 const results = await Promise.all(promises)
 
-console.table(results.reduce((acc, { day, ...x }) => { acc[day] = x; return acc }, {}))
+console.table(results)
 console.log(`Execution time: ${timer.getDuration()}s`)
